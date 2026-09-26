@@ -15,8 +15,11 @@ if (isset($_SESSION['user_id'])) {
 
 $pageTitle = 'Admin Portal Login';
 $error = '';
+$info = '';
 
-if (isset($_GET['error']) && $_GET['error'] === 'login_required') {
+if (isset($_GET['reset'])) {
+    $info = 'Admin password reset successfully! Please log in with your new password.';
+} elseif (isset($_GET['error']) && $_GET['error'] === 'login_required') {
     $error = 'Admin authentication required to access this area.';
 }
 
@@ -69,6 +72,13 @@ require_once __DIR__ . '/../includes/header.php';
                     <p class="text-body-secondary small">System Administrator Sign In</p>
                 </div>
 
+                <?php if ($info): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($info) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <?= htmlspecialchars($error) ?>
@@ -83,7 +93,10 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label for="password" class="form-label mb-0">Password</label>
+                            <a href="<?= BASE_URL ?>auth/forgot_password.php?role=admin" class="small text-decoration-none text-danger">Forgot password?</a>
+                        </div>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
 

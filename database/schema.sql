@@ -16,5 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
     semester VARCHAR(20) NULL,
     section VARCHAR(20) NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_verified BOOLEAN DEFAULT FALSE
+    is_verified BOOLEAN DEFAULT FALSE,
+    otp_code VARCHAR(10) NULL,
+    otp_expiry DATETIME NULL
 );

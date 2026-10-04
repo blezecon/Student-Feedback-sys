@@ -1,41 +1,24 @@
 # Student Feedback System
 
-A web-based **Student Feedback System** built using PHP, MySQL, JavaScript, HTML, and Bootstrap CSS.
+A web-based **Student Feedback System** built with PHP, MySQL, JavaScript, HTML, and Bootstrap CSS.
 
 ## Tech Stack
 
-* **HTML** — Page structure
-* **Bootstrap CSS** — UI styling and responsive design (with native Dark / Light / Auto mode)
-* **JavaScript** — Client-side interactions and dynamic form handling
-* **PHP** — Backend / server-side logic
-* **MySQL** — Relational database
+* **HTML & Bootstrap CSS** — UI with native Dark / Light / Auto mode
+* **JavaScript** — Dynamic form handling
+* **PHP 8.2** — Backend logic
+* **MySQL 8.0** — Relational database
+* **Podman / Docker** — Containerized environment
 
 ---
 
 ## Requirements
 
-Install PHP (with MySQL PDO extension) and MySQL server locally:
-
-* **Ubuntu / Debian / WSL:**
-  ```bash
-  sudo apt update
-  sudo apt install -y php-cli php-mysql mysql-server
-  ```
-* **Fedora / RHEL:**
-  ```bash
-  sudo dnf install -y php-cli php-mysqlnd mysql-server
-  ```
-
-Make sure the MySQL service is running:
-```bash
-sudo systemctl start mysql    # Ubuntu / Debian / WSL
-# or
-sudo systemctl start mysqld   # Fedora / RHEL
-```
+* [Podman](https://podman.io/) and `podman-compose` (or Docker & Docker Compose)
 
 ---
 
-## Installation & Setup
+## Quick Start
 
 ### 1. Clone the repository
 
@@ -44,47 +27,22 @@ git clone https://github.com/blezecon/Student-Feedback-sys.git
 cd Student-Feedback-sys
 ```
 
-### 2. Configure Database Credentials (Optional)
-
-If your local MySQL uses a password, open `config/db_connect.php` and set it:
-
-```php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'student_feedback');
-define('DB_USER', 'root');
-define('DB_PASS', ''); // Set your MySQL password here if not blank
-```
-
-### 3. Import Database Schema
-
-Import the schema to create the database and required tables:
+### 2. Start the containers
 
 ```bash
-mysql -u root -p < database/schema.sql
-# Or if root has no password / using sudo:
-sudo mysql < database/schema.sql
+podman compose up -d
 ```
 
-> **WSL / Ubuntu Troubleshooting:** If you get `Access denied for user 'root'@'localhost'`, run this once in terminal:
-> ```bash
-> sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY ''; FLUSH PRIVILEGES;"
-> ```
+The database schema in `database/schema.sql` imports automatically on first boot.
 
----
+### 3. Open in browser
 
-## Running the Application
+Visit **http://localhost:8000**
 
-Open a terminal in the project's root directory:
-
+To stop the containers:
 ```bash
-php -S localhost:8000
+podman compose down
 ```
-
-Open your browser and visit:
-
-**http://localhost:8000**
-
-*(Press `Ctrl + C` in the terminal to stop the server).*
 
 ---
 
@@ -114,15 +72,12 @@ define('MAIL_FROM_NAME', 'Student Feedback System');
 
 Public registration is only available for **Students** and **Teachers**. Newly registered accounts verify their email via a 6-digit OTP code.
 
-To set up your initial Administrator account:
-
-1. Open **http://localhost:8000/auth/register.php** in your browser and register an account.
-2. Promote your account to **Admin** by running this one-liner in your terminal:
+1. Open **http://localhost:8000/auth/register.php** and register an account.
+2. Promote the account to **Admin**:
 
 ```bash
-sudo mysql student_feedback -e "UPDATE users SET role = 'admin', is_verified = 1 WHERE email = 'your_email@gmail.com';"
+podman compose exec db mysql -u root -proot student_feedback -e "UPDATE users SET role = 'admin', is_verified = 1 WHERE email = 'your_email@gmail.com';"
 ```
-
 *(Or if your MySQL root uses a password: `mysql -u root -p student_feedback -e "UPDATE users SET role = 'admin', is_verified = 1 WHERE email = 'your_email@gmail.com';"`)*
 
 3. You can now log into the **Admin Portal** at **http://localhost:8000/auth/admin_login.php**.
@@ -132,7 +87,5 @@ sudo mysql student_feedback -e "UPDATE users SET role = 'admin', is_verified = 1
 
 ## Notes
 
-* Bootstrap and all SVG icons are stored locally in `assets/`, so no internet connection is required to run the frontend.
-* PHPMailer is bundled locally in `includes/PHPMailer/` without requiring Composer or npm.
-* MySQL must be running while using the application.
-* PHP's built-in web server is intended for local development and testing.
+* Bootstrap and all SVG icons are stored locally in `assets/`, no external CDNs required.
+* Project root is volume-mounted to `/var/www/html`; file edits reflect immediately.

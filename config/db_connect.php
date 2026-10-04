@@ -1,9 +1,9 @@
 <?php
 // Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'student_feedback');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'student_feedback');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 
 // Base URL (works automatically for php -S and XAMPP)
 if (!defined('BASE_URL')) {

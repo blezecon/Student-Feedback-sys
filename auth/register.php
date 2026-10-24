@@ -3,6 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../config/db_connect.php';
+require_once __DIR__ . '/../includes/mailer.php';
 /** @var PDO $pdo */
 
 // Redirect if already logged in
@@ -107,9 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insert user
     if (empty($errors)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $otp = str_pad((string)random_int(100000, 999999), 6, '0', STR_PAD_LEFT);
+
         $insertStmt = $pdo->prepare('
-            INSERT INTO users (name, email, phone, password, role, student_number, employee_id, department, semester, section)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (name, email, phone, password, role, student_number, employee_id, department, semester, section, is_verified, otp_code, otp_expiry)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))
         ');
         $success = $insertStmt->execute([
             $name,
@@ -121,11 +124,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $employee_id ?: null,
             $department ?: null,
             $semester ?: null,
-            $section ?: null
+            $section ?: null,
+            $otp
         ]);
 
         if ($success) {
-            header('Location: ' . BASE_URL . 'auth/login.php?registered=pending');
+            send_otp_email($email, $name, $otp, 'verification');
+            $_SESSION['verify_email'] = $email;
+            header('Location: ' . BASE_URL . 'auth/verify_otp.php?type=register');
             exit;
         } else {
             $errors[] = 'Registration failed. Please try again.';

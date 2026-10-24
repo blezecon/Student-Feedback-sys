@@ -19,13 +19,14 @@ if (isset($_SESSION['user_id'])) {
 $pageTitle = 'Login';
 $error = '';
 $info = '';
+$isHtmlError = false;
 
-if (isset($_GET['registered'])) {
-    if ($_GET['registered'] === 'pending') {
-        $info = 'Registration submitted! Your account is pending administrator approval before you can log in.';
-    } else {
-        $info = 'Registration successful! You can now log in.';
-    }
+if (isset($_GET['verified'])) {
+    $info = 'Account verified successfully! You can now log in.';
+} elseif (isset($_GET['reset'])) {
+    $info = 'Password reset successfully! Please log in with your new password.';
+} elseif (isset($_GET['registered'])) {
+    $info = 'Registration successful! You can now log in.';
 } elseif (isset($_GET['logout'])) {
     $info = 'You have been logged out successfully.';
 } elseif (isset($_GET['error']) && $_GET['error'] === 'login_required') {
@@ -45,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user) {
             if (!$user['is_verified']) {
-                $error = 'Account Not Verified Yet, Please Wait or contact to Admin';
+                $_SESSION['verify_email'] = $user['email'];
+                $isHtmlError = true;
+                $error = 'Your account is not verified yet. <a href="' . BASE_URL . 'auth/verify_otp.php?type=register" class="alert-link">Click here to enter OTP and verify</a>.';
             } elseif (password_verify($password, $user['password'])) {
                 session_regenerate_id(true);
 
@@ -93,7 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?= htmlspecialchars($error) ?>
+                        <?= $isHtmlError ? $error : htmlspecialchars($error) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
@@ -105,7 +108,10 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
 
                     <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label for="password" class="form-label mb-0">Password</label>
+                            <a href="<?= BASE_URL ?>auth/forgot_password.php" class="small text-decoration-none">Forgot password?</a>
+                        </div>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
 

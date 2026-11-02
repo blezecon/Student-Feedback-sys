@@ -71,6 +71,9 @@ $userName = $_SESSION['name'] ?? '';
                                     <?= icon('admin', 'app-icon') ?> Admin Panel
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= BASE_URL ?>admin/courses/index.php">Courses</a>
+                            </li>
                         <?php endif; ?>
                     <?php endif; ?>
                 </ul>

@@ -1,4 +1,4 @@
--- Student Feedback System - Minimal Auth Schema
+-- Student Feedback System 
 CREATE DATABASE IF NOT EXISTS student_feedback;
 USE student_feedback;
 
@@ -72,20 +72,3 @@ CREATE TABLE IF NOT EXISTS feedback_answers (
     FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE,
     UNIQUE KEY uniq_answer (feedback_id, question_id)
 );
-
--- SEED: default survey questions
-INSERT IGNORE INTO questions (question) VALUES
-    ('The course content was well-organized and easy to follow.'),
-    ('The instructor explained concepts clearly.'),
-    ('The instructor was available for help and answered questions.'),
-    ('The course materials (notes, slides, references) were useful.'),
-    ('The workload was appropriate for the credit hours.'),
-    ('Overall, I am satisfied with the teaching and learning experience.');
-
--- SEED: sample courses for local testing
-INSERT IGNORE INTO courses (course_code, course_name, department, semester, section) VALUES
-    ('BCAC501', 'PHP with MySQL', 'BCA', 'Semester 5', 'A'),
-    ('BCAC502', 'Web Technology', 'BCA', 'Semester 5', 'A'),
-    ('BCAC503', 'Software Engineering', 'BCA', 'Semester 5', 'A'),
-    ('BCAC401', 'Data Structures', 'BCA', 'Semester 4', 'A'),
-    ('BBA501', 'Business Communication', 'BBA', 'Semester 5', 'A');

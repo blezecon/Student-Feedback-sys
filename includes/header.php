@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../config/db_connect.php';
 require_once __DIR__ . '/icons.php';
+require_once __DIR__ . '/flash.php';
 
 $pageTitle = isset($pageTitle) ? htmlspecialchars($pageTitle) . ' - Student Feedback' : 'Student Feedback System';
 $isLoggedIn = isset($_SESSION['user_id']);
@@ -70,6 +71,9 @@ $userName = $_SESSION['name'] ?? '';
                                     <?= icon('admin', 'app-icon') ?> Admin Panel
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= BASE_URL ?>admin/courses/index.php">Courses</a>
+                            </li>
                         <?php endif; ?>
                     <?php endif; ?>
                 </ul>
@@ -130,3 +134,9 @@ $userName = $_SESSION['name'] ?? '';
 
     <main class="py-4">
         <div class="container">
+        <?php if (has_flash()): $flash = get_flash(); ?>
+            <div class="alert alert-<?= htmlspecialchars($flash['type']) ?> alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($flash['message']) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
